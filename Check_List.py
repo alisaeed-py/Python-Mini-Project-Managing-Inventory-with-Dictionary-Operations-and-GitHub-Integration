@@ -22,12 +22,12 @@
 
 # [✔] Implement buy_item function to handle purchases from inventory, updating item count and total sales.
 # [✔] Update main function to include a menu option for buying items.
-# [✔] Commit changes to GitHub.
+# [] Commit changes to GitHub.
 
 # Changing Item Prices 💰
 
-# [ ] Create change_price function to update prices of existing items in the inventory.
-# [ ] Update main function to include a menu option for changing item prices.
+# [✔] Create change_price function to update prices of existing items in the inventory.
+# [✔] Update main function to include a menu option for changing item prices.
 # [ ] Commit changes to GitHub.
 
 # Displaying Inventory 📋
