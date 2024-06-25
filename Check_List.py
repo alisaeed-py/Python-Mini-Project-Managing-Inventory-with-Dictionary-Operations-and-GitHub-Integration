@@ -14,9 +14,9 @@
 
 # Adding Items to Inventory ➕
 
-# [ ] Create add_item function to add new items to the inventory with specified details (name, price, count).
-# [ ] Update main function to include a menu option for adding new items.
-# [ ] Commit changes to GitHub.
+# [✔] Create add_item function to add new items to the inventory with specified details (name, price, count).
+# [✔] Update main function to include a menu option for adding new items.
+# [✔] Commit changes to GitHub.
 
 # Buying Items 🛒
 
