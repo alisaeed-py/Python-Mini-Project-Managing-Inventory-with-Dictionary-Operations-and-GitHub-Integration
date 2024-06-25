@@ -20,9 +20,9 @@
 
 # Buying Items 🛒
 
-# [ ] Implement buy_item function to handle purchases from inventory, updating item count and total sales.
-# [ ] Update main function to include a menu option for buying items.
-# [ ] Commit changes to GitHub.
+# [✔] Implement buy_item function to handle purchases from inventory, updating item count and total sales.
+# [✔] Update main function to include a menu option for buying items.
+# [✔] Commit changes to GitHub.
 
 # Changing Item Prices 💰
 
