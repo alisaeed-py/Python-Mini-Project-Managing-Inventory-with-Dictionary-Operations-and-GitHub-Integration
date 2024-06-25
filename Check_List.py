@@ -34,12 +34,12 @@
 
 # [✔] Implement display_inventory function to print current inventory state and total sales.
 # [✔] Update main function to include a menu option for displaying inventory.
-# [ ] Commit changes to GitHub.
+# [✔] Commit changes to GitHub.
 
 # Updating Inventory Count 🔢
 
-# [ ] Create update_inventory function to modify item counts in the inventory.
-# [ ] Update main function to include a menu option for updating item counts.
+# [✔] Create update_inventory function to modify item counts in the inventory.
+# [✔] Update main function to include a menu option for updating item counts.
 # [ ] Commit changes to GitHub.
 
 # Review and Refactor 🛠️

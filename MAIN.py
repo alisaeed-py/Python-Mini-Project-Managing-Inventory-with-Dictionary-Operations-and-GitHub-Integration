@@ -1,6 +1,6 @@
 import json
 
-# File_Operators.py (for handling file operations)
+# File operations
 
 def load_inventory():
     try:
@@ -14,7 +14,7 @@ def save_inventory(inventory):
     with open('inventory.json', 'w') as file:
         json.dump(inventory, file, indent=4)
 
-# Inventory Management Functions
+# Inventory management functions
 
 def add_item(inventory, name, price, count):
     """
@@ -123,24 +123,18 @@ def buy_item(inventory):
 
     if item_name in inventory['Name']:
         index = inventory['Name'].index(item_name)
-        print(f"\nCurrent details of {item_name}:")
-        print(f"Price: {inventory['Price'][index]}")
-        print(f"Count: {inventory['Count'][index]}")
-
-        try:
-            quantity = int(input("Enter the quantity to buy: "))
-
-            if quantity <= int(inventory['Count'][index]):
-                total_cost = quantity * float(inventory['Price'][index])
-                inventory['Count'][index] = str(int(inventory['Count'][index]) - quantity)
-                inventory['Total Sales'] = inventory.get('Total Sales', 0.0) + total_cost
-                print(f"\nYou bought {quantity} of {item_name} for ${total_cost:.2f}")
-            else:
-                print("\nInsufficient stock available.")
-        except ValueError:
-            print("\nInvalid quantity entered.")
+        print(f"Buying {item_name}...")
+        quantity = int(input(f"Enter the quantity to buy (Available: {inventory['Count'][index]}): "))
+        
+        if quantity <= int(inventory['Count'][index]):
+            inventory['Count'][index] -= quantity
+            total_cost = quantity * float(inventory['Price'][index])
+            inventory['Total Sales'] += total_cost
+            print(f"Successfully bought {quantity} {item_name}(s) for ${total_cost:.2f}.")
+        else:
+            print("Insufficient quantity available.")
     else:
-        print(f"\nItem '{item_name}' not found in inventory.")
+        print(f"Item '{item_name}' not found in inventory.")
 
 def change_price(inventory):
     """
@@ -152,28 +146,22 @@ def change_price(inventory):
     Returns:
     - None
     """
-    display_inventory(inventory)
-
     item_name = input("\nEnter the name of the item to change the price: ")
 
     if item_name in inventory['Name']:
         index = inventory['Name'].index(item_name)
-        print(f"\nCurrent details of {item_name}:")
-        print(f"Price: {inventory['Price'][index]}")
+        print(f"\nCurrent price of {item_name}: {inventory['Price'][index]}")
 
-        new_price = input("\nEnter the new price: ").strip()
+        new_price = input("Enter the new price: ").strip()
+        inventory['Price'][index] = new_price
 
-        if new_price:
-            inventory['Price'][index] = new_price
-            print(f"\nPrice of {item_name} updated successfully!")
-        else:
-            print("\nInvalid price entered.")
+        print(f"\nPrice of {item_name} updated successfully to {new_price}.")
     else:
         print(f"\nItem '{item_name}' not found in inventory.")
 
-def delete_item(inventory):
+def update_inventory(inventory):
     """
-    Delete an item from the inventory.
+    Update the count of an existing item in the inventory.
 
     Parameters:
     - inventory (dict): The inventory dictionary.
@@ -181,20 +169,22 @@ def delete_item(inventory):
     Returns:
     - None
     """
-    item_name = input("\nEnter the name of the item to delete: ")
+    item_name = input("\nEnter the name of the item to update count: ")
 
     if item_name in inventory['Name']:
         index = inventory['Name'].index(item_name)
-        del inventory['Name'][index]
-        del inventory['Price'][index]
-        del inventory['Count'][index]
-        print(f"\nItem '{item_name}' deleted successfully!")
+        print(f"\nCurrent count of {item_name}: {inventory['Count'][index]}")
+
+        new_count = input("Enter the new count: ").strip()
+        inventory['Count'][index] = new_count
+
+        print(f"\nCount of {item_name} updated successfully to {new_count}.")
     else:
         print(f"\nItem '{item_name}' not found in inventory.")
 
 def more_options(inventory):
     """
-    Additional options for the inventory management.
+    Additional options for inventory management.
 
     Parameters:
     - inventory (dict): The inventory dictionary.
@@ -205,24 +195,16 @@ def more_options(inventory):
     while True:
         print("\nMore options:")
         print("1. Get item details")
-        print("2. Delete an item")
-        print("3. Change item price")
-        print("4. Back to main menu")
+        print("2. Back to main menu")
 
-        choice = input("\nEnter your choice (1-4): ")
+        choice = input("\nEnter your choice (1-2): ")
 
         if choice == '1':
             get_item_details(inventory)
         elif choice == '2':
-            delete_item(inventory)
-            display_inventory(inventory)
-        elif choice == '3':
-            change_price(inventory)
-            display_inventory(inventory)
-        elif choice == '4':
             break
         else:
-            print("\nInvalid choice. Please enter a number from 1 to 4.")
+            print("\nInvalid choice. Please enter a number from 1 to 2.")
 
 def main():
     # Print a welcome message
@@ -231,42 +213,33 @@ def main():
     # Load inventory from JSON file
     inventory = load_inventory()
 
-    # Display the initial inventory
-    display_inventory(inventory)
-
     while True:
-        # Ask user for action
+        # Display the main menu
         print("\nOptions:")
         print("1. Add a new item")
         print("2. Update an existing item")
         print("3. Get details of an item by name")
         print("4. Buy an item")
         print("5. Change item price")
-        print("6. More options")
-        print("7. Delete an item")
-        print("8. Display Inventory")
-        print("9. Exit")
+        print("6. Update item count")
+        print("7. More options")
+        print("8. Display inventory")
+        print("9. Save and exit")
 
         choice = input("\nEnter your choice (1-9): ")
 
         if choice == '1':
-            # Ask user for new item details
+            # Add a new item
             print("\nEnter details for the new item:")
             name = input("Name: ")
             price = input("Price: ")
             count = input("Count: ")
-
-            # Add the new item to the inventory
             add_item(inventory, name, price, count)
-            print("Item added successfully!")
-
-            # Display the updated inventory
-            display_inventory(inventory)
+            print(f"{name} added to inventory.")
 
         elif choice == '2':
             # Update an existing item
             update_item(inventory)
-            display_inventory(inventory)
 
         elif choice == '3':
             # Get details of an item by name
@@ -275,35 +248,31 @@ def main():
         elif choice == '4':
             # Buy an item
             buy_item(inventory)
-            display_inventory(inventory)
 
         elif choice == '5':
             # Change item price
             change_price(inventory)
-            display_inventory(inventory)
 
         elif choice == '6':
+            # Update item count
+            update_inventory(inventory)
+
+        elif choice == '7':
             # More options
             more_options(inventory)
 
-        elif choice == '7':
-            # Delete an item
-            delete_item(inventory)
-            display_inventory(inventory)
-
         elif choice == '8':
-            # Display inventory
+            # Display current inventory
             display_inventory(inventory)
 
         elif choice == '9':
-            # Save inventory to JSON file before exiting
+            # Save inventory to JSON file and exit
             save_inventory(inventory)
-            print("\nExiting program. Goodbye!")
+            print("\nInventory saved. Exiting program. Goodbye!")
             break
 
         else:
             print("\nInvalid choice. Please enter a number from 1 to 9.")
 
-# Only execute main() if this script is run directly
 if __name__ == "__main__":
     main()
