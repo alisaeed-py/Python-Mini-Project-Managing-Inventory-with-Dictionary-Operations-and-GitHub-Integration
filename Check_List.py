@@ -4,8 +4,8 @@
 
 # Defining Inventory and Sales 📊
 
-# [ ] Define the inventory dictionary to hold item data (name, price, count).
-# [ ] Initialize total_sales to 0.
+# [✔] Define the inventory dictionary to hold item data (name, price, count).
+# [✔] Initialize total_sales to 0.
 
 # Creating the Main Function 🎯
 
