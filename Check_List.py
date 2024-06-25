@@ -28,12 +28,12 @@
 
 # [✔] Create change_price function to update prices of existing items in the inventory.
 # [✔] Update main function to include a menu option for changing item prices.
-# [ ] Commit changes to GitHub.
+# [✔] Commit changes to GitHub.
 
 # Displaying Inventory 📋
 
-# [ ] Implement display_inventory function to print current inventory state and total sales.
-# [ ] Update main function to include a menu option for displaying inventory.
+# [✔] Implement display_inventory function to print current inventory state and total sales.
+# [✔] Update main function to include a menu option for displaying inventory.
 # [ ] Commit changes to GitHub.
 
 # Updating Inventory Count 🔢

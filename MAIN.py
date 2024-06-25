@@ -7,14 +7,14 @@ def load_inventory():
         with open('inventory.json', 'r') as file:
             inventory = json.load(file)
     except FileNotFoundError:
-        inventory = {'Name': [], 'Price': [], 'Count': []}
+        inventory = {'Name': [], 'Price': [], 'Count': [], 'Total Sales': 0.0}
     return inventory
 
 def save_inventory(inventory):
     with open('inventory.json', 'w') as file:
         json.dump(inventory, file, indent=4)
 
-# inventory_management.py
+# Inventory Management Functions
 
 def add_item(inventory, name, price, count):
     """
@@ -35,7 +35,7 @@ def add_item(inventory, name, price, count):
 
 def display_inventory(inventory):
     """
-    Display the current inventory.
+    Display the current inventory and total sales.
 
     Parameters:
     - inventory (dict): The inventory dictionary.
@@ -52,6 +52,9 @@ def display_inventory(inventory):
             price = inventory['Price'][i]
             count = inventory['Count'][i]
             print(f"Name: {name}, Price: {price}, Count: {count}")
+
+    total_sales = inventory.get('Total Sales', 0.0)
+    print(f"\nTotal Sales: ${total_sales:.2f}")
 
 def update_item(inventory):
     """
@@ -228,10 +231,6 @@ def main():
     # Load inventory from JSON file
     inventory = load_inventory()
 
-    # Initialize total sales if not already present
-    if 'Total Sales' not in inventory:
-        inventory['Total Sales'] = 0.0
-
     # Display the initial inventory
     display_inventory(inventory)
 
@@ -244,9 +243,11 @@ def main():
         print("4. Buy an item")
         print("5. Change item price")
         print("6. More options")
-        print("7. Exit")
+        print("7. Delete an item")
+        print("8. Display Inventory")
+        print("9. Exit")
 
-        choice = input("\nEnter your choice (1-7): ")
+        choice = input("\nEnter your choice (1-9): ")
 
         if choice == '1':
             # Ask user for new item details
@@ -286,13 +287,22 @@ def main():
             more_options(inventory)
 
         elif choice == '7':
+            # Delete an item
+            delete_item(inventory)
+            display_inventory(inventory)
+
+        elif choice == '8':
+            # Display inventory
+            display_inventory(inventory)
+
+        elif choice == '9':
             # Save inventory to JSON file before exiting
             save_inventory(inventory)
             print("\nExiting program. Goodbye!")
             break
 
         else:
-            print("\nInvalid choice. Please enter a number from 1 to 7.")
+            print("\nInvalid choice. Please enter a number from 1 to 9.")
 
 # Only execute main() if this script is run directly
 if __name__ == "__main__":
