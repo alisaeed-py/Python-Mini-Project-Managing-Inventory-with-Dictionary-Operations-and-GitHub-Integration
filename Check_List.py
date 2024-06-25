@@ -9,8 +9,8 @@
 
 # Creating the Main Function 🎯
 
-# [ ] Implement a main function to run the program.
-# [ ] Print a welcome message.
+# [✔] Implement a main function to run the program.
+# [✔] Print a welcome message.
 
 # Adding Items to Inventory ➕
 
