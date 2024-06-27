@@ -1,279 +1,333 @@
-import json  # Import the JSON module to work with JSON data.
-import time  # Import the time module to handle time-related tasks.
-import matplotlib.pyplot as plt  # Import Matplotlib's pyplot module to create graphs.
-from datetime import datetime  # Import datetime class from the datetime module to handle date and time.
-from prettytable import PrettyTable  # Import PrettyTable to display data in table format.
-import getpass  # Import getpass to handle secure password input.
+import json  # Import the JSON module for reading and writing JSON data
+import time  # Import the time module for time-related functions
+import matplotlib.pyplot as plt  # Import matplotlib for plotting graphs
+from datetime import datetime  # Import datetime module for date and time manipulation
+from prettytable import PrettyTable  # Import PrettyTable for displaying tables
+import getpass  # Import getpass for secure password input
 
 # Global variables
-current_user = None  # Initialize current_user to None to keep track of the logged-in user.
-inventory = {}  # Inventory dictionary to hold item data.
-total_sales = 0  # Initialize total_sales to 0.
+current_user = None  # Variable to store the current logged-in user
+inventory = {}  # Dictionary to hold item data in the inventory
+total_sales = 0  # Variable to store the total sales across all items, initialized to 0
 
 # Load inventory from JSON file for the current user
 def load_inventory():
-    global inventory, total_sales  # Access the global variables inventory and total_sales.
+    global inventory, total_sales
     try:
-        with open('inventory.json', 'r') as file:  # Open 'inventory.json' file in read mode.
-            data = file.read()  # Read the contents of the file.
-            if data:  # Check if data exists (file is not empty).
-                data = json.loads(data)  # Parse JSON data into a Python dictionary.
-                user_data = data.get(current_user, {})  # Retrieve current user's data from JSON.
-                inventory = user_data.get('inventory', {})  # Retrieve inventory data for the current user.
-                total_sales = user_data.get('total_sales', 0)  # Retrieve total sales for the current user.
-            else:  # If file is empty or data is None.
-                inventory = {}  # Set inventory to an empty dictionary.
-                total_sales = 0  # Set total_sales to 0.
-    except FileNotFoundError:  # Handle exception if 'inventory.json' file is not found.
-        inventory = {}  # Set inventory to an empty dictionary.
-        total_sales = 0  # Set total_sales to 0.
+        with open('inventory.json', 'r') as file:  # Open the inventory JSON file in read mode
+            data = file.read()  # Read the entire contents of the file
+            if data:  # Check if data is not empty
+                data = json.loads(data)  # Parse the JSON data into a Python dictionary
+                user_data = data.get(current_user, {})  # Retrieve the current user's data from JSON
+                inventory = user_data.get('inventory', {})  # Retrieve the inventory dictionary for the current user
+                total_sales = user_data.get('total_sales', 0)  # Retrieve the total sales for the current user
+            else:  # If data is empty (file is empty or doesn't exist)
+                inventory = {}  # Initialize an empty inventory dictionary
+                total_sales = 0  # Initialize total sales to 0
+    except FileNotFoundError:  # Handle the case where the inventory.json file doesn't exist
+        inventory = {}  # Initialize an empty inventory dictionary
+        total_sales = 0  # Initialize total sales to 0
 
 # Save inventory to JSON file for the current user
 def save_inventory():
     try:
-        with open('inventory.json', 'r') as file:  # Open 'inventory.json' file in read mode.
-            data = file.read()  # Read the contents of the file.
-            if data:  # Check if data exists (file is not empty).
-                data = json.loads(data)  # Parse JSON data into a Python dictionary.
-            else:  # If file is empty or data is None.
-                data = {}  # Set data to an empty dictionary.
-    except FileNotFoundError:  # Handle exception if 'inventory.json' file is not found.
-        data = {}  # Set data to an empty dictionary.
+        with open('inventory.json', 'r') as file:  # Open the inventory JSON file in read mode
+            data = file.read()  # Read the entire contents of the file
+            if data:  # Check if data is not empty
+                data = json.loads(data)  # Parse the JSON data into a Python dictionary
+            else:  # If data is empty (file is empty or doesn't exist)
+                data = {}  # Initialize an empty dictionary
+    except FileNotFoundError:  # Handle the case where the inventory.json file doesn't exist
+        data = {}  # Initialize an empty dictionary
 
-    data[current_user] = {'inventory': inventory, 'total_sales': total_sales}  # Update data with current user's inventory and total sales.
+    # Update the data dictionary with current user's inventory and total sales
+    data[current_user] = {'inventory': inventory, 'total_sales': total_sales}
 
-    with open('inventory.json', 'w') as file:  # Open 'inventory.json' file in write mode.
-        json.dump(data, file, indent=4)  # Write JSON data to file with indentation for readability.
+    with open('inventory.json', 'w') as file:  # Open the inventory JSON file in write mode
+        json.dump(data, file, indent=4)  # Write the updated data dictionary to the JSON file with formatting
 
 # Display the current inventory state and total sales as a table
 def display_inventory():
-    print("\n📦 Current Inventory and Sales")  # Print a message indicating the display of inventory and sales.
-    table = PrettyTable()  # Create an instance of PrettyTable to display tabular data.
-    table.field_names = ["Name", "Price", "Count", "Sales (Count)", "Sales (Price)"]  # Set column headers for the table.
-
-    for name, details in inventory.items():  # Iterate through items in the inventory dictionary.
-        sales_count = details.get('sales_count', 0)  # Retrieve 'sales_count' from details dictionary or default to 0 if not found.
-        sales_price = details.get('sales_price', 0.0)  # Retrieve 'sales_price' from details dictionary or default to 0.0 if not found.
-        table.add_row([name, details['price'], details['count'], sales_count, sales_price])  # Add a row to the table with item details.
-
-    print(table)  # Print the PrettyTable displaying current inventory and sales.
-    print(f"💰 Total sales: {total_sales}")  # Print total sales amount.
+    print("\n📦 Current Inventory and Sales")  # Print a header for inventory and sales
+    table = PrettyTable()  # Create a PrettyTable instance for displaying data in tabular format
+    table.field_names = ["Name", "Price", "Count", "Sales (Count)", "Sales (Price)"]  # Define table column headers
+    
+    for name, details in inventory.items():  # Iterate through each item in the inventory dictionary
+        sales_count = details.get('sales_count', 0)  # Retrieve 'sales_count' or default to 0 if not found
+        sales_price = details.get('sales_price', 0.0)  # Retrieve 'sales_price' or default to 0.0 if not found
+        table.add_row([name, details['price'], details['count'], sales_count, sales_price])  # Add a row to the table
+    
+    print(table)  # Print the PrettyTable containing inventory details
+    print(f"💰 Total sales: {total_sales}")  # Print total sales at the end
 
 # Add new item to the inventory
 def add_item(name, price, count):
-    if name in inventory:  # Check if the item already exists in the inventory.
-        print(f"⚠️ Item '{name}' already exists. Use 'update inventory' to modify count.")  # Print a message indicating item already exists.
+    if name in inventory:  # Check if item already exists in inventory
+        print(f"⚠️ Item '{name}' already exists. Use 'update inventory' to modify count.")  # Print warning message
     else:
-        inventory[name] = {'price': price, 'count': count, 'sales_count': 0, 'sales_price': 0.0}  # Add new item with its details to the inventory dictionary.
-        save_inventory()  # Save the updated inventory to 'inventory.json'.
-        print(f"✅ Item '{name}' added to inventory.")  # Print a message indicating successful addition of the item.
+        # Add new item details to inventory dictionary with initial sales metrics
+        inventory[name] = {'price': price, 'count': count, 'sales_count': 0, 'sales_price': 0.0}
+        save_inventory()  # Save updated inventory to JSON file
+        print(f"✅ Item '{name}' added to inventory.")  # Print success message
 
 # Buy item from the inventory
 def buy_item(name, quantity):
-    global total_sales  # Access the global variable total_sales.
-    if name in inventory:  # Check if the item exists in the inventory.
-        if inventory[name]['count'] >= quantity:  # Check if there is enough stock of the item.
-            inventory[name]['count'] -= quantity  # Decrease the item count by the purchased quantity.
-            inventory[name]['sales_count'] += quantity  # Increase the sales count of the item.
-            inventory[name]['sales_price'] += quantity * inventory[name]['price']  # Increase the sales price by the purchased quantity times the item price.
-            total_sales += quantity * inventory[name]['price']  # Increase the total sales by the purchased quantity times the item price.
-            save_inventory()  # Save the updated inventory to 'inventory.json'.
-            print(f"🛒 Purchased {quantity} of '{name}'.")  # Print a message indicating successful purchase of the item.
+    global total_sales  # Access the global total_sales variable
+    if name in inventory:  # Check if item exists in inventory
+        if inventory[name]['count'] >= quantity:  # Check if sufficient stock is available
+            # Update item count, sales count, and total sales
+            inventory[name]['count'] -= quantity
+            inventory[name]['sales_count'] += quantity
+            inventory[name]['sales_price'] += quantity * inventory[name]['price']
+            total_sales += quantity * inventory[name]['price']
+            save_inventory()  # Save updated inventory to JSON file
+            print(f"🛒 Purchased {quantity} of '{name}'.")  # Print purchase confirmation
         else:
-            print(f"❌ Insufficient stock for '{name}'.")  # Print a message indicating insufficient stock of the item.
+            print(f"❌ Insufficient stock for '{name}'.")  # Print insufficient stock message
     else:
-        print(f"❌ Item '{name}' not found in inventory.")  # Print a message indicating item not found in the inventory.
+        print(f"❌ Item '{name}' not found in inventory.")  # Print item not found message
 
 # Change price of an existing item
 def change_price(name, new_price):
-    if name in inventory:  # Check if the item exists in the inventory.
-        inventory[name]['price'] = new_price  # Update the price of the item.
-        save_inventory()  # Save the updated inventory to 'inventory.json'.
-        print(f"💲 Price of '{name}' updated to {new_price}.")  # Print a message indicating successful price change of the item.
+    if name in inventory:  # Check if item exists in inventory
+        inventory[name]['price'] = new_price  # Update item price
+        save_inventory()  # Save updated inventory to JSON file
+        print(f"💲 Price of '{name}' updated to {new_price}.")  # Print success message
     else:
-        print(f"❌ Item '{name}' not found in inventory.")  # Print a message indicating item not found in the inventory.
+        print(f"❌ Item '{name}' not found in inventory.")  # Print item not found message
 
 # Update the count of an item in the inventory
 def update_inventory(name, count):
-    if name in inventory:  # Check if the item exists in the inventory.
-        inventory[name]['count'] = count  # Update the count of the item.
-        save_inventory()  # Save the updated inventory to 'inventory.json'.
-        print(f"🔄 Inventory of '{name}' updated to {count}.")  # Print a message indicating successful update of the item count.
+    if name in inventory:  # Check if item exists in inventory
+        inventory[name]['count'] = count  # Update item count
+        save_inventory()  # Save updated inventory to JSON file
+        print(f"🔄 Inventory of '{name}' updated to {count}.")  # Print success message
     else:
-        print(f"❌ Item '{name}' not found in inventory.")  # Print a message indicating item not found in the inventory.
+        print(f"❌ Item '{name}' not found in inventory.")  # Print item not found message
 
 # Display statistics for a specific item by its name
 def detail_by_name(name, period):
-    if name in inventory:  # Check if the item exists in the inventory.
-        now = datetime.now()  # Get the current date and time.
-        if period == 'day':  # Check if the period is 'day'.
-            print(f"\n📅 Statistics for '{name}' on {now.strftime('%Y-%m-%d')}:")  # Print statistics for the item on the current day.
-        elif period == 'month':  # Check if the period is 'month'.
-            print(f"\n📅 Statistics for '{name}' in {now.strftime('%Y-%m')}:")  # Print statistics for the item in the current month.
-        elif period == 'year':  # Check if the period is 'year'.
-            print(f"\n📅 Statistics for '{name}' in {now.strftime('%Y')}:")  # Print statistics for the item in the current year.
-        print(f"Price: {inventory[name]['price']}, Stock: {inventory[name]['count']}, Sales (Count): {inventory[name]['sales_count']}, Sales (Price): {inventory[name]['sales_price']}")  # Print detailed statistics for the item.
+    if name in inventory:  # Check if item exists in inventory
+        now = datetime.now()  # Get current date and time
+        if period == 'day':  # Check if period is 'day'
+            print(f"\n📅 Statistics for '{name}' on {now.strftime('%Y-%m-%d')}:")
+        elif period == 'month':  # Check if period is 'month'
+            print(f"\n📅 Statistics for '{name}' in {now.strftime('%Y-%m')}:")
+        elif period == 'year':  # Check if period is 'year'
+            print(f"\n📅 Statistics for '{name}' in {now.strftime('%Y')}:")
+        # Print item details including price, stock, sales count, and sales price
+        print(f"Price: {inventory[name]['price']}, Stock: {inventory[name]['count']}, Sales (Count): {inventory[name]['sales_count']}, Sales (Price): {inventory[name]['sales_price']}")
     else:
-        print(f"❌ Item '{name}' not found in inventory.")  # Print a message indicating item not found in the inventory.
+        print(f"❌ Item '{name}' not found in inventory.")  # Print item not found message
 
 # Delete an item from the inventory
 def delete_item(name):
-    if name in inventory:  # Check if the item exists in the inventory.
-        del inventory[name]  # Delete the item from the inventory.
-        save_inventory()  # Save the updated inventory to 'inventory.json'.
-        print(f"🗑️ Item '{name}' deleted from inventory.")  # Print a message indicating successful deletion of the item.
+    if name in inventory:  # Check if item exists in inventory
+        del inventory[name]  # Delete item from inventory dictionary
+        save_inventory()  # Save updated inventory to JSON file
+        print(f"🗑️ Item '{name}' deleted from inventory.")  # Print success message
     else:
-        print(f"❌ Item '{name}' not found in inventory.")  # Print a message indicating item not found in the inventory.
+        print(f"❌ Item '{name}' not found in inventory.")  # Print item not found message
 
 # Generate graphs based on inventory data
 def generate_graph():
-    print("\n📊 Graph Generator")  # Print a message indicating the start of graph generation.
-    print("Data Options:")  # Print available data options for graph generation.
+    print("\n📊 Graph Generator")  # Print header for graph generator
+    print("Data Options:")  # Print options for data selection
     print("1. All product sales")
     print("2. All product stock")
     print("3. All product sales and stock")
 
-    data_option = int(input("Enter data option (1-3): "))  # Prompt user to choose a data option (1-3).
-
-    if data_option == 1:  # If user chooses data option 1.
-        print("\nGraph Types:")  # Print available graph types for sales data.
+    data_option = int(input("Enter data option (1-3): "))  # Prompt user to choose data option
+    
+    if data_option == 1:  # If user chooses option 1 (All product sales)
+        print("\nGraph Types:")  # Print options for graph types
         print("1. Bar Graph")
         print("2. Pie Chart")
         print("3. Histogram")
-        graph_option = int(input("Enter graph option (1-3): "))  # Prompt user to choose a graph option (1-3).
+        graph_option = int(input("Enter graph option (1-3): "))  # Prompt user to choose graph option
 
-        if graph_option == 1:  # If user chooses graph option 1.
-            names = list(inventory.keys())  # Get a list of item names from the inventory.
-            plt.bar(names, [inventory[name]['sales_count'] for name in names])  # Create a bar graph of sales count for each item.
-            plt.xlabel('Items')  # Set the label for the x-axis.
-            plt.ylabel('Sales (Count)')  # Set the label for the y-axis.
-            plt.title('Bar Graph: Sales (Count) of all items')  # Set the title of the graph.
-            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability.
-            plt.show()  # Display the bar graph.
-        elif graph_option == 2:  # If user chooses graph option 2.
-            names = list(inventory.keys())  # Get a list of item names from the inventory.
-            plt.figure(figsize=(8, 8))  # Set the figure size for the pie chart.
-            plt.pie([inventory[name]['sales_count'] for name in names], labels=names, autopct='%1.1f%%')  # Create a pie chart of sales count distribution.
-            plt.title('Pie Chart: Sales (Count) Distribution')  # Set the title of the pie chart.
-            plt.show()  # Display the pie chart.
-        elif graph_option == 3:  # If user chooses graph option 3.
-            plt.hist([inventory[name]['sales_count'] for name in inventory.keys()], bins=10)  # Create a histogram of sales count distribution.
-            plt.xlabel('Sales (Count)')  # Set the label for the x-axis.
-            plt.ylabel('Frequency')  # Set the label for the y-axis.
-            plt.title('Histogram: Sales (Count) Distribution')  # Set the title of the histogram.
-            plt.show()  # Display the histogram.
-        else:  # If user enters an invalid graph option.
-            print("❌ Invalid option.")  # Print a message indicating invalid option.
-    
-    elif data_option == 2:  # If user chooses data option 2.
-        print("\nGraph Types:")  # Print available graph types for stock data.
+        if graph_option == 1:  # If user chooses option 1 (Bar Graph)
+            names = list(inventory.keys())  # Get list of item names
+            plt.bar(names, [inventory[name]['sales_count'] for name in names])  # Plot bar graph of sales count
+            plt.xlabel('Items')  # Set x-axis label
+            plt.ylabel('Sales (Count)')  # Set y-axis label
+            plt.title('Bar Graph: Sales (Count) of all items')  # Set title of the graph
+            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+            plt.show()  # Display the graph
+        elif graph_option == 2:  # If user chooses option 2 (Pie Chart)
+            names = list(inventory.keys())  # Get list of item names
+            plt.figure(figsize=(8, 8))  # Set figure size
+            plt.pie([inventory[name]['sales_count'] for name in names], labels=names, autopct='%1.1f%%')  # Plot pie chart of sales count
+            plt.title('Pie Chart: Sales (Count) Distribution')  # Set title of the graph
+            plt.show()  # Display the graph
+        elif graph_option == 3:  # If user chooses option 3 (Histogram)
+            plt.hist([inventory[name]['sales_count'] for name in inventory.keys()], bins=10)  # Plot histogram of sales count
+            plt.xlabel('Sales (Count)')  # Set x-axis label
+            plt.ylabel('Frequency')  # Set y-axis label
+            plt.title('Histogram: Sales (Count) Distribution')  # Set title of the graph
+            plt.show()  # Display the graph
+        else:
+            print("❌ Invalid option.")  # Print error message for invalid option
+        
+    elif data_option == 2:  # If user chooses option 2 (All product stock)
+        print("\nGraph Types:")  # Print options for graph types
         print("1. Bar Graph")
-        graph_option = int(input("Enter graph option (1): "))  # Prompt user to choose a graph option (1).
+        graph_option = int(input("Enter graph option (1): "))  # Prompt user to choose graph option
 
-        if graph_option == 1:  # If user chooses graph option 1.
-            names = list(inventory.keys())  # Get a list of item names from the inventory.
-            plt.bar(names, [inventory[name]['count'] for name in names])  # Create a bar graph of item stock for each item.
-            plt.xlabel('Items')  # Set the label for the x-axis.
-            plt.ylabel('Stocks')  # Set the label for the y-axis.
-            plt.title('Bar Graph: Stocks of all items')  # Set the title of the graph.
-            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability.
-            plt.show()  # Display the bar graph.
-        else:  # If user enters an invalid graph option.
-            print("❌ Invalid option.")  # Print a message indicating invalid option.
+        if graph_option == 1:  # If user chooses option 1 (Bar Graph)
+            names = list(inventory.keys())  # Get list of item names
+            plt.bar(names, [inventory[name]['count'] for name in names])  # Plot bar graph of item stocks
+            plt.xlabel('Items')  # Set x-axis label
+            plt.ylabel('Stocks')  # Set y-axis label
+            plt.title('Bar Graph: Stocks of all items')  # Set title of the graph
+            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+            plt.show()  # Display the graph
+        else:
+            print("❌ Invalid option.")  # Print error message for invalid option
 
-    elif data_option == 3:  # If user chooses data option 3.
-        print("\nGraph Types:")  # Print available graph types for combined data.
+    elif data_option == 3:  # If user chooses option 3 (All product sales and stock)
+        print("\nGraph Types:")  # Print options for graph types
         print("1. Bar Graph: Stocks")
         print("2. Bar Graph: Sales (Count)")
-        graph_option = int(input("Enter graph option (1-2): "))  # Prompt user to choose a graph option (1-2).
+        graph_option = int(input("Enter graph option (1-2): "))  # Prompt user to choose graph option
 
-        if graph_option == 1:  # If user chooses graph option 1.
-            names = list(inventory.keys())  # Get a list of item names from the inventory.
-            plt.figure(figsize=(10, 5))  # Set the figure size for the bar graph.
-            plt.bar(names, [inventory[name]['count'] for name in names], label='Stocks')  # Create a bar graph of item stocks.
-            plt.xlabel('Items')  # Set the label for the x-axis.
-            plt.ylabel('Quantity')  # Set the label for the y-axis.
-            plt.title('Bar Graph: Stocks of all items')  # Set the title of the graph.
-            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability.
-            plt.legend()  # Display legend for the graph.
-            plt.show()  # Display the bar graph.
-        elif graph_option == 2:  # If user chooses graph option 2.
-            names = list(inventory.keys())  # Get a list of item names from the inventory.
-            plt.figure(figsize=(10, 5))  # Set the figure size for the bar graph.
-            plt.bar(names, [inventory[name]['sales_count'] for name in names], label='Sales (Count)')  # Create a bar graph of item sales count.
-            plt.xlabel('Items')  # Set the label for the x-axis.
-            plt.ylabel('Quantity')  # Set the label for the y-axis.
-            plt.title('Bar Graph: Sales (Count) of all items')  # Set the title of the graph.
-            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability.
-            plt.legend()  # Display legend for the graph.
-            plt.show()  # Display the bar graph.
-        else:  # If user enters an invalid graph option.
-            print("❌ Invalid option.")  # Print a message indicating invalid option.
+        if graph_option == 1:  # If user chooses option 1 (Bar Graph: Stocks)
+            names = list(inventory.keys())  # Get list of item names
+            plt.figure(figsize=(10, 5))  # Set figure size
+            plt.bar(names, [inventory[name]['count'] for name in names], label='Stocks')  # Plot bar graph of item stocks
+            plt.xlabel('Items')  # Set x-axis label
+            plt.ylabel('Quantity')  # Set y-axis label
+            plt.title('Bar Graph: Stocks of all items')  # Set title of the graph
+            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+            plt.legend()  # Display legend
+            plt.show()  # Display the graph
+        elif graph_option == 2:  # If user chooses option 2 (Bar Graph: Sales (Count))
+            names = list(inventory.keys())  # Get list of item names
+            plt.figure(figsize=(10, 5))  # Set figure size
+            plt.bar(names, [inventory[name]['sales_count'] for name in names], label='Sales (Count)')  # Plot bar graph of sales count
+            plt.xlabel('Items')  # Set x-axis label
+            plt.ylabel('Quantity')  # Set y-axis label
+            plt.title('Bar Graph: Sales (Count) of all items')  # Set title of the graph
+            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+            plt.legend()  # Display legend
+            plt.show()  # Display the graph
+        else:
+            print("❌ Invalid option.")  # Print error message for invalid option
 
-    else:  # If user enters an invalid data option.
-        print("❌ Invalid option.")  # Print a message indicating invalid option.
+    else:
+        print("❌ Invalid option.")  # Print error message for invalid option
 
 # Registration function
 def register_user():
-    with open('login.json', 'r') as file:  # Open 'login.json' file in read mode.
+    with open('login.json', 'r') as file:  # Open the login JSON file in read mode
         try:
-            users = json.load(file)  # Load existing user data from 'login.json'.
-        except json.JSONDecodeError:  # Handle JSON decode error.
-            users = {}  # If file is empty or not valid JSON, initialize users dictionary.
+            users = json.load(file)  # Load existing user data from JSON
+        except json.JSONDecodeError:  # Handle JSON decoding error
+            users = {}  # Initialize empty dictionary if file is empty or not JSON formatted
 
-    username = input("Enter a new username: ")  # Prompt user to enter a new username.
-    if username in users:  # Check if the entered username already exists.
-        print("❌ Username already exists. Try logging in.")  # Print a message indicating username already exists.
-        return False  # Return False to indicate registration failure.
+    username = input("Enter a new username: ")  # Prompt user to enter a new username
+    if username in users:  # Check if username already exists in the users dictionary
+        print("❌ Username already exists. Try logging in.")  # Print error message if username exists
+        return False  # Return False to indicate registration failure
 
-    password = getpass.getpass("Enter a new password: ")  # Prompt user to enter a new password securely.
-    users[username] = password  # Add new username and password to the users dictionary.
+    password = getpass.getpass("Enter a new password: ")  # Prompt user to enter a new password securely
+    users[username] = password  # Add new username-password pair to the users dictionary
 
-    with open('login.json', 'w') as file:  # Open 'login.json' file in write mode.
-        json.dump(users, file, indent=4)  # Write updated user data to 'login.json' with indentation for readability.
+    with open('login.json', 'w') as file:  # Open the login JSON file in write mode
+        json.dump(users, file, indent=4)  # Write updated users dictionary to JSON file with formatting
     
-    print("✅ Registration successful. You can now log in.")  # Print a message indicating successful registration.
-    return True  # Return True to indicate registration success.
+    print("✅ Registration successful. You can now log in.")  # Print success message
+    return True  # Return True to indicate registration success
 
 # Login function
 def login_user():
-    global current_user  # Access the global variable current_user.
-    with open('login.json', 'r') as file:  # Open 'login.json' file in read mode.
+    global current_user  # Access the global current_user variable
+    with open('login.json', 'r') as file:  # Open the login JSON file in read mode
         try:
-            users = json.load(file)  # Load existing user data from 'login.json'.
-        except json.JSONDecodeError:  # Handle JSON decode error.
-            users = {}  # If file is empty or not valid JSON, initialize users dictionary.
+            users = json.load(file)  # Load existing user data from JSON
+        except json.JSONDecodeError:  # Handle JSON decoding error
+            users = {}  # Initialize empty dictionary if file is empty or not JSON formatted
 
-    username = input("Enter username: ")  # Prompt user to enter username.
-    password = getpass.getpass("Enter password: ")  # Prompt user to enter password securely.
+    username = input("Enter username: ")  # Prompt user to enter username
+    password = getpass.getpass("Enter password: ")  # Prompt user to enter password securely
 
-    if username in users and users[username] == password:  # Check if username exists and password matches.
-        current_user = username  # Set current_user to the logged-in username.
-        print("✅ Login successful.")  # Print a message indicating successful login.
-        return True  # Return True to indicate login success.
-    else:  # If username doesn't exist or password doesn't match.
-        print("❌ Invalid credentials. Please try again.")  # Print a message indicating invalid credentials.
-        return False  # Return False to indicate login failure.
+    if username in users and users[username] == password:  # Check if username exists and password is correct
+        current_user = username  # Set current_user to the logged-in username
+        print("✅ Login successful.")  # Print success message
+        load_inventory()  # Load inventory data for the logged-in user
+        main_menu()  # Display the main menu for further actions
+    else:
+        print("❌ Invalid username or password. Please try again.")  # Print error message
 
+# Main menu function
+def main_menu():
+    while True:  # Loop to display menu until user chooses to exit
+        print("\n🔑 Main Menu")  # Print main menu header
+        print("1. Display Inventory")
+        print("2. Add Item")
+        print("3. Buy Item")
+        print("4. Change Item Price")
+        print("5. Update Inventory Count")
+        print("6. Item Details")
+        print("7. Delete Item")
+        print("8. Generate Graph")
+        print("9. Save and Logout")
+        choice = input("Enter your choice (1-9): ")  # Prompt user to enter choice
+
+        if choice == '1':  # Option to display inventory
+            display_inventory()
+        elif choice == '2':  # Option to add new item
+            name = input("Enter item name: ")
+            price = float(input("Enter item price: "))
+            count = int(input("Enter item count: "))
+            add_item(name, price, count)
+        elif choice == '3':  # Option to buy item
+            name = input("Enter item name: ")
+            quantity = int(input("Enter quantity to buy: "))
+            buy_item(name, quantity)
+        elif choice == '4':  # Option to change item price
+            name = input("Enter item name: ")
+            new_price = float(input("Enter new price: "))
+            change_price(name, new_price)
+        elif choice == '5':  # Option to update item count
+            name = input("Enter item name: ")
+            new_count = int(input("Enter new count: "))
+            update_inventory(name, new_count)
+        elif choice == '6':  # Option to view item details
+            name = input("Enter item name: ")
+            period = input("Enter period (day/month/year): ")
+            detail_by_name(name, period.lower())
+        elif choice == '7':  # Option to delete item
+            name = input("Enter item name: ")
+            delete_item(name)
+        elif choice == '8':  # Option to generate graphs
+            generate_graph()
+        elif choice == '9':  # Option to save and logout
+            save_inventory()  # Save current inventory to JSON file
+            print("🔒 Logged out.")  # Print logout message
+            break  # Exit the loop and end the program
+        else:  # Handle invalid menu choices
+            print("❌ Invalid choice. Please enter a number from 1 to 9.")
+
+# Entry point of the program
 def main():
-    while True:  # Start an indefinite loop for the main program.
-        print("\n🔑 Login Menu")  # Print the login menu header.
-        print("1. Login")  # Print option for logging in.
-        print("2. Register")  # Print option for registering a new user.
-        print("3. Exit")  # Print option for exiting the program.
-        choice = input("Enter your choice (1-3): ")  # Prompt user to enter their choice (1-3).
+    while True:  # Loop to handle login and registration until successful
+        print("\n🔒 Login or Register")  # Print login or register header
+        print("1. Login")
+        print("2. Register")
+        print("3. Exit")
+        choice = input("Enter your choice (1-3): ")  # Prompt user to enter choice
 
-        if choice == '1':  # If user chooses option 1 (Login).
-            if login_user():  # Call login_user() function to attempt login.
-                break  # Exit the login loop if login is successful.
-        elif choice == '2':  # If user chooses option 2 (Register).
-            if register_user():  # Call register_user() function to attempt registration.
-                continue  # Continue to the next iteration of the loop after successful registration.
-        elif choice == '3':  # If user chooses option 3 (Exit).
-            print("👋 Exiting program. Goodbye!")  # Print a goodbye message.
-            break  # Exit the program loop to end the program.
-        else:  # If user enters an invalid choice.
-            print("❌ Invalid choice. Please enter a valid option (1-3).")  # Print a message indicating invalid choice.
+        if choice == '1':  # Option to login
+            login_user()  # Call login function
+        elif choice == '2':  # Option to register
+            if register_user():  # Call register function and check if successful
+                login_user()  # If registration successful, proceed to login
+        elif choice == '3':  # Option to exit
+            print("👋 Goodbye!")  # Print farewell message
+            break  # Exit the loop and end the program
+        else:  # Handle invalid menu choices
+            print("❌ Invalid choice. Please enter a number from 1 to 3.")
 
 if __name__ == "__main__":
-    main()  # Call the main() function to start the program.
+    main()  # Start the main function when the script is executed
