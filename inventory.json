@@ -1,12 +1,28 @@
 {
-    "Name": [
-        "Coffee"
-    ],
-    "Price": [
-        "& C:/Users/user/AppData/Local/Programs/Python/Python312/python.exe \"e:/Python Mini Project Managing Inventory with Dictionary Operations and GitHub Integration/MAIN.py\""
-    ],
-    "Count": [
-        "10"
-    ],
-    "Total Sales": 10900.0
+    "inventory": {
+        "Cake": {
+            "price": 100.0,
+            "count": 1,
+            "sales_count": 499,
+            "sales_price": 49900.0
+        },
+        "Coffee": {
+            "price": 10.0,
+            "count": 1,
+            "sales_count": 99,
+            "sales_price": 990.0
+        }
+    },
+    "total_sales": 51895.0,
+    "ali": {
+        "inventory": {
+            "Coffee": {
+                "price": 10.0,
+                "count": 100,
+                "sales_count": 0,
+                "sales_price": 0.0
+            }
+        },
+        "total_sales": 0
+    }
 }
